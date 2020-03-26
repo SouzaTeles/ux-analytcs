@@ -14,9 +14,21 @@ function api_get(req, res) {
 }
 
 function api_id_get(req, res) {
-    const file
-    res.write("funcionou");
-    res.end();
+  const fileName = req.url.split("/")[2];
+  const file = path.join(DATA_DIR, fileName) + ".json";
+
+  console.log(file);
+  console.log(fileName);
+  fs.readFile(file, (err, json) => {
+    if (err) throw err;
+    else if (json) {
+        console.log('antes')
+        console.log(json.toString())
+        console.log('depois')
+      res.write(json.toString());
+      res.end();
+    }
+  });
 }
 
 function handleServer(req, res) {
@@ -24,9 +36,8 @@ function handleServer(req, res) {
   if (req.url === "/api/") {
     // res.end("funcionando")
     api_get(req, res);
-  }
-  else if(req.url.indexOf("/api/") > -1 && req.method == "GET") {
-      api_id_get(req, res);
+  } else if (req.url.indexOf("/api/") > -1 && req.method == "GET") {
+    api_id_get(req, res);
   }
 }
 http.createServer(handleServer).listen(3001);
