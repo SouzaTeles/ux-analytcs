@@ -32,10 +32,22 @@ function api_id_get(req, res) {
 }
 
 function api_id_post(req, res) {
-  const fileName = req.url.split("?name=");
-  console.log(fileName)
-  res.write('aaa')
-  res.end();
+  const fileName = req.url.split("?name=")[1];
+  const file = path.join(__dirname, fileName) + ".json";
+  console.log(fileName);
+  console.log(file)
+  let data = [];
+  req.on("data", chunck => data.push(chunck));
+  req.on("end", () => {
+    const body = Buffer.concat(data).toString();
+    fs.writeFile(file, body, err => {
+      if (err) throw err;
+      res.write(body);
+    });
+    console.log(data);
+    res.write("aaa");
+    res.end();
+  });
 }
 
 function handleServer(req, res) {
@@ -51,9 +63,10 @@ function handleServer(req, res) {
     api_get(req, res);
   } else if (req.url.indexOf("/api/") > -1 && req.method == "GET") {
     api_id_get(req, res);
-  }
-  else if (req.url.indexOf("/api/") > -1 && req.method == "POST") {
+  } else if (req.url.indexOf("/api/") > -1 && req.method == "POST") {
     api_id_post(req, res);
+  } else {
+    res.end("sem rota");
   }
 }
 http.createServer(handleServer).listen(3001);
