@@ -5,6 +5,7 @@ function api_get(req, res){
     fs.readdir(`${__dirname}/data/`, (err, files)=>{
         if(err) throw err;
         res.write(JSON.stringify(files));
+        res.end();
         // console.log(files)
     })
 }
